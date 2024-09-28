@@ -3,6 +3,7 @@ import java.util.Objects;
 class RabbitAndTurtle {
     public static AnimalThread rabbit;
     public static AnimalThread turtle;
+    public static boolean first = true;
 
     public static void main(String[] args) {
         rabbit = new AnimalThread("Rabbit", Thread.MAX_PRIORITY);
@@ -15,12 +16,10 @@ class RabbitAndTurtle {
 
 class AnimalThread extends Thread {
     final int TRACE_DISTANCE = 100;
-    int distance = 0;
-    String name;
-    int priority;
+    private int distance = 0;
+    boolean b = true;
+
     AnimalThread(String name, int priority) {
-        this.name = name;
-        this.priority = priority;
         setName(name);
         setPriority(priority);
     }
@@ -35,22 +34,20 @@ class AnimalThread extends Thread {
 
                 // Проверка на увелчение расстояния между черепашкой и зайцем
                 // (если расстояние слшком болшое, то меняем приоритет)
-                if (Objects.equals(getName(), "Turtle") && distance < RabbitAndTurtle.rabbit.getDistance() - 10) {
-                    setPriority(Thread.MAX_PRIORITY);
-                    RabbitAndTurtle.rabbit.setPriority(Thread.NORM_PRIORITY);
+                if (Math.abs(RabbitAndTurtle.turtle.getDistance() - RabbitAndTurtle.rabbit.getDistance()) >= 5 && b) {
+                    int prior = RabbitAndTurtle.turtle.getPriority();
+                    RabbitAndTurtle.turtle.setPriority(RabbitAndTurtle.rabbit.getPriority());
+                    RabbitAndTurtle.rabbit.setPriority(prior);
                 }
-                else if (Objects.equals(getName(), "Rabbit") && distance < RabbitAndTurtle.turtle.getDistance() - 10) {
-                    setPriority(Thread.MAX_PRIORITY);
-                    RabbitAndTurtle.turtle.setPriority(Thread.NORM_PRIORITY);
-                }
-
 
                 distance += 1;
+
+                b = !b;
 
                 String line = "";
 
                 for (int i = 0; i < distance; i++) line += "_";
-                if (Objects.equals(name, "Turtle")) line += "\uD80C\uDD89";
+                if (Objects.equals(getName(), "Turtle")) line += "\uD80C\uDD89";
                 else line += "\uD83D\uDC30";
                 for (int i = distance; i < TRACE_DISTANCE; i++) line += "_";
 
